@@ -1,0 +1,219 @@
+import java.util.Random;
+import java.util.Scanner;
+
+// Clase que representa un alumno
+class Alumno {
+    int numeroCuenta;
+    String nombre;
+    int edad;
+    String correo;
+    int semestre;
+    String[] materias;
+    double promedio;
+
+    public Alumno(int numeroCuenta, String nombre, int edad, String correo, int semestre, String[] materias, double promedio) {
+        this.numeroCuenta = numeroCuenta;
+        this.nombre = nombre;
+        this.edad = edad;
+        this.correo = correo;
+        this.semestre = semestre;
+        this.materias = materias;
+        this.promedio = promedio;
+    }
+}
+
+// Clase que representa un nodo en el árbol binario de búsqueda
+class BSTNode {
+    Alumno alumno;
+    BSTNode left, right;
+
+    public BSTNode(Alumno alumno) {
+        this.alumno = alumno;
+        this.left = null;
+        this.right = null;
+    }
+}
+
+// Clase que representa el Árbol Binario de Búsqueda
+class BST {
+    private BSTNode root;
+
+    public BST() {
+        this.root = null;
+    }
+
+    public void insert(Alumno alumno) {
+        root = insertRec(root, alumno);
+    }
+
+    private BSTNode insertRec(BSTNode root, Alumno alumno) {
+        if (root == null) {
+            root = new BSTNode(alumno);
+            return root;
+        }
+
+        if (alumno.numeroCuenta < root.alumno.numeroCuenta) {
+            root.left = insertRec(root.left, alumno);
+        } else if (alumno.numeroCuenta > root.alumno.numeroCuenta) {
+            root.right = insertRec(root.right, alumno);
+        }
+
+        return root;
+    }
+
+    public Alumno search(int numeroCuenta) {
+        return searchRec(root, numeroCuenta);
+    }
+
+    private Alumno searchRec(BSTNode root, int numeroCuenta) {
+        if (root == null || root.alumno.numeroCuenta == numeroCuenta) {
+            return root != null ? root.alumno : null;
+        }
+
+        if (numeroCuenta < root.alumno.numeroCuenta) {
+            return searchRec(root.left, numeroCuenta);
+        }
+
+        return searchRec(root.right, numeroCuenta);
+    }
+}
+
+// Funciones auxiliares para generar datos aleatorios
+class Utils {
+    private static Random random = new Random();
+
+    public static int generarNumeroCuenta() {
+        return 10000000 + random.nextInt(90000000); // Genera un número de cuenta de 8 dígitos
+    }
+
+    public static String generarNombre() {
+        String[] nombres = {"Juan", "Ana", "Pedro", "Luis", "Maria", "Lucia", "Carlos", "Laura", "Sofia", "Miguel"};
+        String[] apellidos = {"Gomez", "Martinez", "Perez", "Hernandez", "Lopez", "Diaz", "Sanchez", "Ramirez", "Cruz", "Garcia"};
+        return nombres[random.nextInt(nombres.length)] + " " +
+                apellidos[random.nextInt(apellidos.length)] + " " +
+                apellidos[random.nextInt(apellidos.length)];
+    }
+
+    public static int generarEdad() {
+        return 18 + random.nextInt(8); // Edad entre 18 y 25
+    }
+
+    public static String generarCorreo(String nombre) {
+        String[] dominios = {"@gmail.com", "@hotmail.com", "@yahoo.com"};
+        return nombre.split(" ")[0].toLowerCase() + dominios[random.nextInt(dominios.length)];
+    }
+
+    public static int generarSemestre() {
+        return 1 + random.nextInt(9); // Semestre entre 1 y 9
+    }
+
+    public static String[] generarMaterias(int semestre) {
+        String[] materias;
+        switch (semestre) {
+            case 1:
+                materias = new String[]{"Base de datos", "Programación I", "algebra lineal", "Álgebra analitica", "Cálculo"};
+                break;
+            case 2:
+                materias = new String[]{"geometria analitica", "Programación orientada a objetos", "calculo vectorial", "computadoras y programacion", "Cálculo Integral"};
+                break;
+            case 3:
+                materias = new String[]{"Estructuras de Datos", "diseño logico", "Estadística", "Matemáticas III", "emprendimiento"};
+                break;
+            default:
+                materias = new String[]{"Materia A", "Materia B", "Materia C", "Materia D", "Materia E"};
+                break;
+        }
+        return materias;
+    }
+
+    public static double generarPromedio() {
+        return Math.round(5.0 + (random.nextDouble() * 5.0) * 100.0) / 100.0; // Promedio entre 5.0 y 10.0
+    }
+}
+
+// Clase principal del programa
+public class Main {
+    public static void main(String[] args) {
+        BST bst = generarAlumnos(100);
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\nMenú:");
+            System.out.println("1. Insertar nuevo alumno");
+            System.out.println("2. Consultar alumno por número de cuenta");
+            System.out.println("3. Salir");
+
+            System.out.print("Elige una opción: ");
+            String opcion = scanner.nextLine();
+
+            switch (opcion) {
+                case "1":
+                    System.out.print("Número de cuenta: ");
+                    int numeroCuenta = Integer.parseInt(scanner.nextLine());
+                    System.out.print("Nombre completo: ");
+                    String nombre = scanner.nextLine();
+                    System.out.print("Edad: ");
+                    int edad = Integer.parseInt(scanner.nextLine());
+                    System.out.print("Correo electrónico: ");
+                    String correo = scanner.nextLine();
+                    System.out.print("Semestre (1-9): ");
+                    int semestre = Integer.parseInt(scanner.nextLine());
+                    String[] materias = new String[5];
+                    for (int i = 0; i < 5; i++) {
+                        System.out.print("Materia " + (i + 1) + ": ");
+                        materias[i] = scanner.nextLine();
+                    }
+                    System.out.print("Promedio general: ");
+                    double promedio = Double.parseDouble(scanner.nextLine());
+
+                    Alumno alumno = new Alumno(numeroCuenta, nombre, edad, correo, semestre, materias, promedio);
+                    bst.insert(alumno);
+                    System.out.println("Alumno insertado exitosamente.");
+                    break;
+
+                case "2":
+                    System.out.print("Número de cuenta del alumno: ");
+                    int numCuentaBusqueda = Integer.parseInt(scanner.nextLine());
+                    Alumno alumnoEncontrado = bst.search(numCuentaBusqueda);
+                    if (alumnoEncontrado != null) {
+                        System.out.println("Nombre: " + alumnoEncontrado.nombre);
+                        System.out.print("Materias: ");
+                        for (String materia : alumnoEncontrado.materias) {
+                            System.out.print(materia + " ");
+                        }
+                        System.out.println("\nPromedio: " + alumnoEncontrado.promedio);
+                    } else {
+                        System.out.println("Alumno no encontrado.");
+                    }
+                    break;
+
+                case "3":
+                    System.out.println("Saliendo...");
+                    scanner.close();
+                    return;
+
+                default:
+                    System.out.println("Opción no válida. Intenta de nuevo.");
+                    break;
+            }
+        }
+    }
+
+    // Función para generar 100 alumnos aleatorios e insertarlos en el árbol
+    public static BST generarAlumnos(int n) {
+        BST bst = new BST();
+        for (int i = 0; i < n; i++) {
+            int numeroCuenta = Utils.generarNumeroCuenta();
+            String nombre = Utils.generarNombre();
+            int edad = Utils.generarEdad();
+            String correo = Utils.generarCorreo(nombre);
+            int semestre = Utils.generarSemestre();
+            String[] materias = Utils.generarMaterias(semestre);
+            double promedio = Utils.generarPromedio();
+
+            Alumno alumno = new Alumno(numeroCuenta, nombre, edad, correo, semestre, materias, promedio);
+            bst.insert(alumno);
+        }
+        return bst;
+    }
+}
